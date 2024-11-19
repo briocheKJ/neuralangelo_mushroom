@@ -11,6 +11,7 @@ license agreement from NVIDIA CORPORATION is strictly prohibited.
 '''
 
 import json
+import os
 import numpy as np
 import torch
 import torchvision.transforms.functional as torchvision_F
@@ -38,6 +39,28 @@ class Dataset(base.Dataset):
             subset = cfg_data[self.split].subset
             subset_idx = np.linspace(0, len(self.list), subset+1)[:-1].astype(int)
             self.list = [self.list[i] for i in subset_idx]
+        if cfg_data[self.split].test_txt:
+            # 1. 构造 test.txt 文件路径
+            test_file_path = os.path.join(cfg.data.root, "test.txt")
+            
+            # 2. 读取 test.txt 中的文件名列表
+            with open(test_file_path, 'r') as f:
+                test_files = set(line.strip() for line in f if line.strip())  # 去除空行和首尾空格
+            
+            # 3. 过滤 self.list 中的元素
+            filtered_list = []
+            for i, item in enumerate(self.list):
+                if 'file_path' not in item:
+                    raise KeyError(f"Item at index {i} does not contain the 'file_path' key. Item: {item}")
+                # 获取 file_path 的文件名（不带扩展名）
+                file_name = os.path.splitext(os.path.basename(item['file_path']))[-2]
+                
+                # 检查文件名是否在 test.txt 中
+                if file_name not in test_files:
+                    filtered_list.append(item)
+            
+            # 4. 更新 self.list
+            self.list = filtered_list
         self.num_rays = cfg.model.render.rand_rays
         self.readjust = getattr(cfg_data, "readjust", None)
         # Preload dataset if possible.

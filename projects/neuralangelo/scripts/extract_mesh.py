@@ -42,6 +42,23 @@ def parse_args():
 
 
 def main():
+
+    # import debugpy
+    # import os
+
+    # # 获取当前进程的rank
+    # local_rank = int(os.environ.get('LOCAL_RANK', 0))  # 或根据实际情况修改
+
+    # # 设置debugpy调试端口，确保不同进程使用不同端口
+    # debugpy.listen(('0.0.0.0', 5678 + local_rank))  # local_rank 用于不同进程使用不同端口
+
+    # print(f"Process {local_rank} is waiting for debugger...")
+
+    # # 等待调试器连接
+    # debugpy.wait_for_client()
+
+    # print(f"Process {local_rank} connected to debugger")
+
     args, cfg_cmd = parse_args()
     set_affinity(args.local_rank)
     cfg = Config(args.config)

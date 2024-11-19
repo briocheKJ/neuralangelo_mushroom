@@ -1,0 +1,27 @@
+_parent_: projects/neuralangelo/configs/base.yaml
+
+model:
+    object:
+        sdf:
+            mlp:
+                inside_out: False   # True for Meetingroom.
+            encoding:
+                coarse2fine:
+                    init_active_level: 8
+    appear_embed:
+        enabled: False
+
+data:
+    type: projects.neuralangelo.data
+    root: /NASdata/lkj/dataset/mushroom/vr_room/iphone/long_capture
+    # num_images: 422  # The number of training images.
+    train:
+        image_size: [994,738]
+        batch_size: 8
+        subset:
+        test_txt: True
+    val:
+        image_size: [400,300]
+        batch_size: 1
+        subset: 1
+        max_viz_samples: 16
